@@ -18,8 +18,7 @@ const product = async () => {
     }
 
     const data = await res.json();
-
-    console.log(data)
+    
     //img
     const productImg =
         `
@@ -44,5 +43,41 @@ const product = async () => {
         colors.innerHTML += productColor;
     });
 
+//-------------Local storage------------------------
+    const titleRusult = title.innerHTML
+    const imgResult = img.getElementsByTagName('img')[0].getAttribute("src")
+    const button = document.getElementById("addToCart")
+    const descriptionRusult = description.innerHTML
+
+    function saveProduct(product){
+        localStorage.setItem("product", JSON.stringify(product));
+    }
+    
+    function getProduct(){
+       let product = localStorage.getItem("product");
+       if (product == null){
+            return [];
+       }else{
+            return JSON.parse(product);
+       }
+    }
+    
+    function addProduct(kanap){
+        let product = getProduct();
+        product.push(kanap);
+        saveProduct(product);
+    }
+    
+    function valitation(){
+        button.addEventListener('click',() => {
+            addProduct({id,titleRusult,imgResult,descriptionRusult})
+        }) 
+    }
+    valitation()
+    
 }
+
+
 product()
+
+
