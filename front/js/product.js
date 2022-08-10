@@ -17,9 +17,11 @@ const product = async () => {
         console.log("ERREUR");
         return;
     }
+   
 
     const data = await res.json();
-    
+    console.log(data);
+  
     //img
     const productImg =
         `
@@ -36,7 +38,7 @@ const product = async () => {
     //Couleur
     //
     data.colors.forEach((element) => {
-        
+
         const productColor =
             `
             <option value="${element}">${element}</option>
@@ -44,68 +46,57 @@ const product = async () => {
         colors.innerHTML += productColor;
     });
 
-//-------------Local storage------------------------
+    //-------------Local storage------------------------
     const quantity = document.getElementById("quantity")
     const button = document.getElementById("addToCart")
 
-    const titleRusult = title.innerHTML
+    const titleResult = title.innerHTML
     const imgResult = img.getElementsByTagName('img')[0].getAttribute("src")
-    let colorResult = 
-    colors.addEventListener('change', function() {
+    let colorResult = colors.addEventListener('change', function () {
         var value = colors.options[colors.selectedIndex].value;
         colorResult = value;
-      })
-    let quantityResult = 
-    quantity.addEventListener('change', function() {
-     quantityResult = Number(quantity.value)
-        
-      })
-    const descriptionRusult = description.innerHTML
+    })
+    let quantityResult = quantity.addEventListener('change', function () {
+            quantityResult = Number(quantity.value)
+
+        })
+    const descriptionResult = description.innerHTML
 
 
-    function saveBasket(basket){
+    function saveBasket(basket) {
         localStorage.setItem("basket", JSON.stringify(basket));
     }
-    
-    function getBasket(){
-       let basket = localStorage.getItem("basket");
-       if (basket == null){
+
+    function getBasket() {
+        let basket = localStorage.getItem("basket");
+        if (basket == null) {
             return [];
-       }else{
+        } else {
             return JSON.parse(basket);
-       }
+        }
     }
-    
-    function addBasket(kanap){
+
+    function addBasket(kanap) {
         let basket = getBasket();
-        let foundKanap = basket.find(p => p.id == kanap.id);
-        if(foundKanap && foundKanap.colorResult === kanap.colorResult){
+        let foundKanap = basket.find(p => p.id === kanap.id && p.colorResult === kanap.colorResult);
+        if (foundKanap && foundKanap.colorResult === kanap.colorResult) {
             foundKanap.quantityResult += kanap.quantityResult
-        }else{
-            basket.push(kanap);    
+        } else {
+            basket.push(kanap);
         }
 
-        saveBasket(basket);    
+        saveBasket(basket);
     }
     
- 
-    function removeFromBasket(){
-        let product = getBasket();
-        product = basket.filter(p => p.id != basket.id)
-        saveBasket(product)
-    }
 
-   
-    
 
-    function valitation(){
-        button.addEventListener('click',() => {
-            
-            addBasket({id,titleRusult,imgResult,descriptionRusult,colorResult,quantityResult})
-        }) 
+    function valitation() {
+        button.addEventListener('click', () => {
+            addBasket({ id, titleResult, imgResult, descriptionResult, colorResult, quantityResult })
+        })
     }
     valitation()
-    
+
 }
 
 
