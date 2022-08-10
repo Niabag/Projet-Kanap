@@ -57,34 +57,51 @@ const product = async () => {
       })
     let quantityResult = 
     quantity.addEventListener('change', function() {
-        quantityResult = quantity.value
+     quantityResult = Number(quantity.value)
+        
       })
     const descriptionRusult = description.innerHTML
 
 
-    function saveProduct(product){
-        localStorage.setItem("product", JSON.stringify(product));
+    function saveBasket(basket){
+        localStorage.setItem("basket", JSON.stringify(basket));
     }
     
-    function getProduct(){
-       let product = localStorage.getItem("product");
-       if (product == null){
+    function getBasket(){
+       let basket = localStorage.getItem("basket");
+       if (basket == null){
             return [];
        }else{
-            return JSON.parse(product);
+            return JSON.parse(basket);
        }
     }
     
-    function addProduct(kanap){
-        let product = getProduct();
-   
-        product.push(kanap);
-        saveProduct(product);
+    function addBasket(kanap){
+        let basket = getBasket();
+        let foundKanap = basket.find(p => p.id == kanap.id);
+        if(foundKanap && foundKanap.colorResult === kanap.colorResult){
+            foundKanap.quantityResult += kanap.quantityResult
+        }else{
+            basket.push(kanap);    
+        }
+
+        saveBasket(basket);    
     }
     
+ 
+    function removeFromBasket(){
+        let product = getBasket();
+        product = basket.filter(p => p.id != basket.id)
+        saveBasket(product)
+    }
+
+   
+    
+
     function valitation(){
         button.addEventListener('click',() => {
-            addProduct({id,titleRusult,imgResult,descriptionRusult,colorResult,quantityResult})
+            
+            addBasket({id,titleRusult,imgResult,descriptionRusult,colorResult,quantityResult})
         }) 
     }
     valitation()
@@ -93,5 +110,3 @@ const product = async () => {
 
 
 product()
-
-
