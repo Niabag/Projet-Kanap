@@ -67,36 +67,31 @@ const productBasket = async () => {
     cartItem.innerHTML += itemBasket;
 
     //On calcule le totale du prix
+    totalQuantityPrice = document.getElementById("totalPrice");
     function totalPriceProduct() {
       totalPriceResult = localStorage.quantityResult * price;
-      return totalPriceResult;
+      totalArray.push(totalPriceResult);
+      const totalPrice = totalArray.reduce((accumulator, currentValue) => {
+        return (accumulator += currentValue);
+      });
+      totalQuantityPrice.innerHTML = totalPrice;
     }
     totalPriceProduct();
-
-    totalArray.push(totalPriceResult);
-    const totalPrice = totalArray.reduce((accumulator, currentValue) => {
-      return (accumulator += currentValue);
-    });
-
-    totalQuantity = document.getElementById("totalPrice");
-    totalQuantity.innerHTML = totalPrice;
   });
 
   //On calcule le totale de quantité et on ajoute le totale de quantité dans le DOM
+  totalQuantity = document.getElementById("totalQuantity");
   function totalQuantityBasket() {
     let basket = getBasket();
     let number = 0;
     for (let product of basket) {
       totalQuantityResult = number += product.quantityResult;
     }
-    return totalQuantityResult;
+    totalQuantity.innerHTML = totalQuantityResult;
   }
 
-  totalQuantityResult = totalQuantityBasket();
-  totalQuantity = document.getElementById("totalQuantity");
-  totalQuantity.innerHTML = totalQuantityResult;
+  totalQuantityBasket();
 
-  
   //On change la valeur d'un produit
   let itemQuantity = document.querySelectorAll(".itemQuantity");
 
@@ -107,17 +102,14 @@ const productBasket = async () => {
 
     element.addEventListener("change", (e) => {
       let newQuantity = element.value;
-      let foundProduct = basket.filter(
-        (p) => p.colors === parentColor && p._id === parentId
-      )[0];
-      foundProduct.quantityResult = newQuantity;
-
+      let foundProduct = basket.find(
+        (p) => p.colorResult === parentColor && p.id === parentId
+      );
+      foundProduct.quantityResult = parseInt(newQuantity);
       saveBasket(basket);
-    
+      totalQuantityBasket();
+      totalPriceProduct();
     });
-
-  
- });
-
+  });
 };
 productBasket();
