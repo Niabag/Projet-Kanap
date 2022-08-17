@@ -18,6 +18,7 @@ const product = async () => {
   }
 
   const data = await res.json();
+  console.log(data)
 
   //img
   const productImg = `
