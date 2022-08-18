@@ -43,30 +43,30 @@ const productBasket = async () => {
 
     const itemBasket = `
       <article class="cart__item" data-id="${localStorage.id}" data-color="${localStorage.colorResult}">
-      <div class="cart__item__img">
-        <img src="${localStorage.imgResult}" alt="Photographie d'un canapé">
-      </div>
-      <div class="cart__item__content">
-        <div class="cart__item__content__description">
-          <h2>${localStorage.titleResult}</h2>
-          <p>${localStorage.colorResult}</p>
-          <p>${price}</p>
+        <div class="cart__item__img">
+          <img src="${localStorage.imgResult}" alt="Photographie d'un canapé">
         </div>
-        <div class="cart__item__content__settings">
-          <div class="cart__item__content__settings__quantity">
-            <p>Qté : </p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${localStorage.quantityResult}">
+        <div class="cart__item__content">
+          <div class="cart__item__content__description">
+            <h2>${localStorage.titleResult}</h2>
+            <p>${localStorage.colorResult}</p>
+            <p>${price}</p>
           </div>
-          <div class="cart__item__content__settings__delete">
-            <p class="deleteItem">Supprimer</p>
+          <div class="cart__item__content__settings">
+            <div class="cart__item__content__settings__quantity">
+              <p>Qté : </p>
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${localStorage.quantityResult}">
+            </div>
+            <div class="cart__item__content__settings__delete">
+              <p class="deleteItem">Supprimer</p>
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
                 `;
     cartItem.innerHTML += itemBasket;
 
-    //On calcule le totale du prix
+    //On calcule le totale du prix et on l'ajoute dans le DOM
     totalQuantityPrice = document.getElementById("totalPrice");
     function totalPriceProduct() {
       totalPriceResult = localStorage.quantityResult * price;
@@ -78,19 +78,6 @@ const productBasket = async () => {
     }
     totalPriceProduct();
   });
-
-  //On calcule le totale de quantité et on ajoute le totale de quantité dans le DOM
-  totalQuantity = document.getElementById("totalQuantity");
-  function totalQuantityBasket() {
-    let basket = getBasket();
-    let number = 0;
-    for (let product of basket) {
-      totalQuantityResult = number += product.quantityResult;
-    }
-    totalQuantity.innerHTML = totalQuantityResult;
-  }
-
-  totalQuantityBasket();
 
   //On change la valeur d'un produit
   let itemQuantity = document.querySelectorAll(".itemQuantity");
@@ -108,7 +95,44 @@ const productBasket = async () => {
       foundProduct.quantityResult = parseInt(newQuantity);
       saveBasket(basket);
       totalQuantityBasket();
-      totalPriceProduct();
+    });
+  });
+
+  //On calcule le total de quantité et on ajoute le totale de quantité dans le DOM
+  totalQuantity = document.getElementById("totalQuantity");
+  function totalQuantityBasket() {
+    let basket = getBasket();
+    let number = 0;
+    for (let product of basket) {
+      totalQuantityResult = number += product.quantityResult;
+    }
+    totalQuantity.innerHTML = totalQuantityResult;
+  }
+  totalQuantityBasket();
+
+  let removeProduct = document.querySelectorAll(
+    ".cart__item__content__settings__delete"
+  );
+
+  //On supprime un element
+  Array.prototype.filter.call(removeProduct, (element) => {
+    let parent = element.closest("article");
+    let parentId = parent.dataset.id;
+    let parentColor = parent.dataset.color;
+
+    element.addEventListener("click", (e) => {
+      let foundProduct = basket.find(
+        (p) => p.colorResult === parentColor && p.id === parentId
+      );
+      let index = basket.indexOf(foundProduct);
+      basket.splice(index, 1);
+      saveBasket(basket);
+
+      window.location.reload();
+
+      if (basket.length < 1) {
+        localStorage.clear();
+      }
     });
   });
 };
