@@ -135,5 +135,95 @@ const productBasket = async () => {
       }
     });
   });
+
+  // on recupere les elements du DOM
+  let firstName = document.getElementById("firstName");
+  let lastName = document.getElementById("lastName");
+  let adresse = document.getElementById("address");
+  let city = document.getElementById("city");
+  let email = document.getElementById("email");
+
+  let submit = document.getElementById("order");
+
+  submit.addEventListener("click", (event) => {
+    event.preventDefault();
+    //On recupere la saisie de l'utilisateur dans les champs de saisie
+    let valueFirstName = firstName.value.trim();
+    let valueLastName = lastName.value.trim();
+    let valueAdresse = adresse.value.trim();
+    let valueCity = city.value.trim();
+    let valueEmail = email.value.trim();
+
+    //Outil regexp pour verifier si la saisie est conforme
+    let regExpFirstName = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+    let regExpLastName = regExpFirstName;
+    let regExpteAddress = /^[#.0-9a-zA-ZÀ-ÿ\s,-]{2,60}$/;
+    let regExpCity = regExpFirstName;
+    let regExpEmail =
+      /^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,4})$/;
+
+    //On recupere le message d'erreur pour chaque champs
+    let errorFirstName = document.getElementById("firstNameErrorMsg");
+    let errorLastName = document.getElementById("lastNameErrorMsg");
+    let errorAddress = document.getElementById("addressErrorMsg");
+    let errorCity = document.getElementById("cityErrorMsg");
+    let errorEmail = document.getElementById("emailErrorMsg");
+
+    function validationForm() {
+      basket = getBasket();
+
+      //On verifie les champs de saisie avec les regexp
+      if (basket === null ) {
+        alert("Ajouter un produit au panier avant de commander");
+        return false;
+      } else if (regExpFirstName.test(valueFirstName) == false) {
+        errorFirstName.innerHTML = "Entrer un nom valide";
+        return false;
+      } else if (regExpLastName.test(valueLastName) == false) {
+        errorLastName.innerHTML = "Entrer un prénom valide";
+        return false;
+      } else if (regExpteAddress.test(valueAdresse) == false) {
+        errorAddress.innerHTML = "Entrer une adresse valide";
+        return false;
+      } else if (regExpCity.test(valueCity) == false) {
+        errorCity.innerHTML = "Entrer une ville valide";
+        return false;
+      } else if (regExpEmail.test(valueEmail) == false) {
+        errorEmail.innerHTML = "Entrer un email valide";
+        return false;
+      }
+      //Si les champs son valider on envois les données a l'api pour retouner un bon de commande
+      else {
+        let contact = {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          address: adresse.value,
+          city: city.value,
+          email: email.value,
+        };
+
+        let cartOrder = [];
+        basket.forEach((product) => {
+          cartOrder.push(product.id);
+        }); 
+       
+      
+
+        let userOrder = { contact: contact, products: cartOrder };
+        console.log(cartOrder)
+        fetch("http://localhost:3000/api/products/order", {
+          method : "POST",
+          headers : {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userOrder),
+        }).then(response => response.json())
+        .then((data) => {
+           window.location.href = "./confirmation.html?orderId=" + data.orderId
+        })
+      }
+    }
+    validationForm();
+  });
 };
 productBasket();
