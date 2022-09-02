@@ -92,6 +92,7 @@ const product = async () => {
         colorResult,
         quantityResult,
       });
+      alert("Produit ajouté au panier");
     });
   }
   valitation();

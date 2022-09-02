@@ -30,32 +30,40 @@ const productBasket = async () => {
   }
 
   //Un tableau vide pour regouper le resultat du total des prix produit
-  totalArray = [];
+  const totalArray = [];
 
   //On creer notre produit et on ajoute ses donnés
+  function totalPriceProduct(product, price) {
+    totalPriceResult = product.quantityResult * price;
+    totalArray.push(totalPriceResult);
+    const totalPrice = totalArray.reduce((accumulator, currentValue) => {
+      return (accumulator += currentValue);
+    });
+    return totalPrice;
+  }
 
-  basket.forEach((localStorage) => {
+  basket.forEach((product) => {
     data.forEach((data) => {
-      if (data._id === localStorage.id) {
+      if (data._id === product.id) {
         price = data.price;
       }
     });
 
     const itemBasket = `
-      <article class="cart__item" data-id="${localStorage.id}" data-color="${localStorage.colorResult}">
+      <article class="cart__item" data-id="${product.id}" data-color="${product.colorResult}">
         <div class="cart__item__img">
-          <img src="${localStorage.imgResult}" alt="Photographie d'un canapé">
+          <img src="${product.imgResult}" alt="Photographie d'un canapé">
         </div>
         <div class="cart__item__content">
           <div class="cart__item__content__description">
-            <h2>${localStorage.titleResult}</h2>
-            <p>${localStorage.colorResult}</p>
+            <h2>${product.titleResult}</h2>
+            <p>${product.colorResult}</p>
             <p>${price}</p>
           </div>
           <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
               <p>Qté : </p>
-              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${localStorage.quantityResult}">
+              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantityResult}">
             </div>
             <div class="cart__item__content__settings__delete">
               <p class="deleteItem">Supprimer</p>
@@ -68,16 +76,14 @@ const productBasket = async () => {
 
     //On calcule le totale du prix et on l'ajoute dans le DOM
     totalQuantityPrice = document.getElementById("totalPrice");
-    function totalPriceProduct() {
-      totalPriceResult = localStorage.quantityResult * price;
-      totalArray.push(totalPriceResult);
-      const totalPrice = totalArray.reduce((accumulator, currentValue) => {
-        return (accumulator += currentValue);
-      });
-      totalQuantityPrice.innerHTML = totalPrice;
-    }
-    totalPriceProduct();
+ 
+  
+ 
+    totalQuantityPrice.innerHTML = totalPriceProduct(product, price);
+
   });
+
+
 
   //On change la valeur d'un produit
   let itemQuantity = document.querySelectorAll(".itemQuantity");
@@ -95,6 +101,7 @@ const productBasket = async () => {
       foundProduct.quantityResult = parseInt(newQuantity);
       saveBasket(basket);
       totalQuantityBasket();
+      location.reload();
     });
   });
 
@@ -135,6 +142,7 @@ const productBasket = async () => {
       }
     });
   });
+ 
 
   // on recupere les elements du DOM
   let firstName = document.getElementById("firstName");
@@ -174,6 +182,7 @@ const productBasket = async () => {
 
       //On verifie les champs de saisie avec les regexp
       if (basket === null ) {
+        
         alert("Ajouter un produit au panier avant de commander");
         return false;
       } else if (regExpFirstName.test(valueFirstName) == false) {
