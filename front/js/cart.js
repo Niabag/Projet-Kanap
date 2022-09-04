@@ -32,7 +32,7 @@ const productBasket = async () => {
   //Un tableau vide pour regouper le resultat du total des prix produit
   const totalArray = [];
 
-  //On creer notre produit et on ajoute ses donnés
+  //Calcule tu total du prix de nos produit
   function totalPriceProduct(product, price) {
     totalPriceResult = product.quantityResult * price;
     totalArray.push(totalPriceResult);
@@ -42,14 +42,16 @@ const productBasket = async () => {
     return totalPrice;
   }
 
-  basket.forEach((product) => {
-    data.forEach((data) => {
-      if (data._id === product.id) {
-        price = data.price;
-      }
-    });
+  //Ajout les donnés des articles dynamiquement
+  if (basket != null) {
+    basket.forEach((product) => {
+      data.forEach((data) => {
+        if (data._id === product.id) {
+          price = data.price;
+        }
+      });
 
-    const itemBasket = `
+      const itemBasket = `
       <article class="cart__item" data-id="${product.id}" data-color="${product.colorResult}">
         <div class="cart__item__img">
           <img src="${product.imgResult}" alt="Photographie d'un canapé">
@@ -72,78 +74,75 @@ const productBasket = async () => {
         </div>
       </article>
                 `;
-    cartItem.innerHTML += itemBasket;
+      cartItem.innerHTML += itemBasket;
 
-    //On calcule le totale du prix et on l'ajoute dans le DOM
-    totalQuantityPrice = document.getElementById("totalPrice");
- 
-  
- 
-    totalQuantityPrice.innerHTML = totalPriceProduct(product, price);
+      //On calcule le totale du prix et on l'ajoute dans le DOM
+      totalQuantityPrice = document.getElementById("totalPrice");
 
-  });
-
-
-
-  //On change la valeur d'un produit
-  let itemQuantity = document.querySelectorAll(".itemQuantity");
-
-  Array.prototype.filter.call(itemQuantity, (element) => {
-    let parent = element.closest("article");
-    let parentId = parent.dataset.id;
-    let parentColor = parent.dataset.color;
-
-    element.addEventListener("change", (e) => {
-      let newQuantity = element.value;
-      let foundProduct = basket.find(
-        (p) => p.colorResult === parentColor && p.id === parentId
-      );
-      foundProduct.quantityResult = parseInt(newQuantity);
-      saveBasket(basket);
-      totalQuantityBasket();
-      location.reload();
+      totalQuantityPrice.innerHTML = totalPriceProduct(product, price);
     });
-  });
 
-  //On calcule le total de quantité et on ajoute le totale de quantité dans le DOM
-  totalQuantity = document.getElementById("totalQuantity");
-  function totalQuantityBasket() {
-    let basket = getBasket();
-    let number = 0;
-    for (let product of basket) {
-      totalQuantityResult = number += product.quantityResult;
-    }
-    totalQuantity.innerHTML = totalQuantityResult;
-  }
-  totalQuantityBasket();
+    //On change la quantitée d'un produit
+    let itemQuantity = document.querySelectorAll(".itemQuantity");
 
-  let removeProduct = document.querySelectorAll(
-    ".cart__item__content__settings__delete"
-  );
+    Array.prototype.filter.call(itemQuantity, (element) => {
+      let parent = element.closest("article");
+      let parentId = parent.dataset.id;
+      let parentColor = parent.dataset.color;
 
-  //On supprime un element
-  Array.prototype.filter.call(removeProduct, (element) => {
-    let parent = element.closest("article");
-    let parentId = parent.dataset.id;
-    let parentColor = parent.dataset.color;
+      element.addEventListener("change", (e) => {
+        let newQuantity = element.value;
+        let foundProduct = basket.find(
+          (p) => p.colorResult === parentColor && p.id === parentId
+        );
+        foundProduct.quantityResult = parseInt(newQuantity);
+        saveBasket(basket);
+        totalQuantityBasket();
+        location.reload();
+      });
+    });
 
-    element.addEventListener("click", (e) => {
-      let foundProduct = basket.find(
-        (p) => p.colorResult === parentColor && p.id === parentId
-      );
-      let index = basket.indexOf(foundProduct);
-      basket.splice(index, 1);
-      saveBasket(basket);
-
-      window.location.reload();
-
-      if (basket.length < 1) {
-        localStorage.clear();
+    //On calcule le total d'articles et on ajoute le totale de quantité dans le DOM
+    totalQuantity = document.getElementById("totalQuantity");
+    function totalQuantityBasket() {
+      let basket = getBasket();
+      let number = 0;
+      for (let product of basket) {
+        totalQuantityResult = number += product.quantityResult;
       }
-    });
-  });
- 
+      totalQuantity.innerHTML = totalQuantityResult;
+    }
+    totalQuantityBasket();
 
+    let removeProduct = document.querySelectorAll(
+      ".cart__item__content__settings__delete"
+    );
+
+    //On supprime un article du panier
+    Array.prototype.filter.call(removeProduct, (element) => {
+      let parent = element.closest("article");
+      let parentId = parent.dataset.id;
+      let parentColor = parent.dataset.color;
+
+      element.addEventListener("click", (e) => {
+        let foundProduct = basket.find(
+          (p) => p.colorResult === parentColor && p.id === parentId
+        );
+        let index = basket.indexOf(foundProduct);
+        basket.splice(index, 1);
+        saveBasket(basket);
+
+        window.location.reload();
+
+        if (basket.length < 1) {
+          localStorage.clear();
+        }
+      });
+    });
+  } else {
+    const form = document.querySelector(".cart__order");
+    form.style.display = "none";
+  }
   // on recupere les elements du DOM
   let firstName = document.getElementById("firstName");
   let lastName = document.getElementById("lastName");
@@ -152,7 +151,10 @@ const productBasket = async () => {
   let email = document.getElementById("email");
 
   let submit = document.getElementById("order");
-
+  if (basket === null) {
+    const form = document.querySelector(".cart__order");
+    form.style.display = "none";
+  }
   submit.addEventListener("click", (event) => {
     event.preventDefault();
     //On recupere la saisie de l'utilisateur dans les champs de saisie
@@ -179,13 +181,9 @@ const productBasket = async () => {
 
     function validationForm() {
       basket = getBasket();
-
+      console.log(basket);
       //On verifie les champs de saisie avec les regexp
-      if (basket === null ) {
-        
-        alert("Ajouter un produit au panier avant de commander");
-        return false;
-      } else if (regExpFirstName.test(valueFirstName) == false) {
+      if (regExpFirstName.test(valueFirstName) == false) {
         errorFirstName.innerHTML = "Entrer un nom valide";
         return false;
       } else if (regExpLastName.test(valueLastName) == false) {
@@ -214,22 +212,22 @@ const productBasket = async () => {
         let cartOrder = [];
         basket.forEach((product) => {
           cartOrder.push(product.id);
-        }); 
-       
-      
+        });
 
         let userOrder = { contact: contact, products: cartOrder };
-        console.log(cartOrder)
+        console.log(cartOrder);
         fetch("http://localhost:3000/api/products/order", {
-          method : "POST",
-          headers : {
+          method: "POST",
+          headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(userOrder),
-        }).then(response => response.json())
-        .then((data) => {
-           window.location.href = "./confirmation.html?orderId=" + data.orderId
         })
+          .then((response) => response.json())
+          .then((data) => {
+            window.location.href =
+              "./confirmation.html?orderId=" + data.orderId;
+          });
       }
     }
     validationForm();

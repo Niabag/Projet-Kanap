@@ -4,11 +4,11 @@ const description = document.getElementById("description");
 const price = document.getElementById("price");
 const colors = document.getElementById("colors");
 
-//
+//Recuperation de l'id du produit dans l'url
 const url = new URLSearchParams(window.location.search);
 const id = url.get("id");
 
-//
+//Connection a l'API avec la methode fetch avec l'id du produit en parametre
 const product = async () => {
   const res = await fetch(`http://localhost:3000/api/products/${id}`);
 
@@ -20,6 +20,7 @@ const product = async () => {
   const data = await res.json();
   console.log(data)
 
+  //Ajout des donnés du produits en dynamaique
   //img
   const productImg = `
         <img src="${data.imageUrl}" alt="Photographie d'un canapé">
@@ -32,7 +33,6 @@ const product = async () => {
   //Description
   description.innerHTML = data.description;
   //Couleur
-  //
   data.colors.forEach((element) => {
     const productColor = `
     <option value="${element}">${element}</option>
@@ -41,6 +41,7 @@ const product = async () => {
   });
 
   //-------------Local storage------------------------
+  //On ajoute les donnés saisie dans le localstorage
   const quantity = document.getElementById("quantity");
   const button = document.getElementById("addToCart");
 
@@ -55,10 +56,12 @@ const product = async () => {
   });
   const descriptionResult = description.innerHTML;
 
+  //Fonction pour sauvgarder notre panier
   function saveBasket(basket) {
     localStorage.setItem("basket", JSON.stringify(basket));
   }
 
+  //On recupere le panier
   function getBasket() {
     let basket = localStorage.getItem("basket");
     if (basket == null) {
@@ -68,6 +71,7 @@ const product = async () => {
     }
   }
 
+  //Si deux produit on la meme couleur alors il ce cumule en un dans le localstorege
   function addBasket(kanap) {
     let basket = getBasket();
     let foundKanap = basket.find(
@@ -82,6 +86,7 @@ const product = async () => {
     saveBasket(basket);
   }
 
+  //Ajout au panier au clic du bouton ajouter au panier
   function valitation() {
     button.addEventListener("click", () => {
       addBasket({
