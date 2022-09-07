@@ -76,13 +76,13 @@ const productBasket = async () => {
                 `;
       cartItem.innerHTML += itemBasket;
 
-      //On calcule le totale du prix et on l'ajoute dans le DOM
+      //On ajoute le total du prix dans le DOM
       totalQuantityPrice = document.getElementById("totalPrice");
 
       totalQuantityPrice.innerHTML = totalPriceProduct(product, price);
     });
 
-    //On change la quantitée d'un produit
+    //On change la quantité d'un produit
     let itemQuantity = document.querySelectorAll(".itemQuantity");
 
     Array.prototype.filter.call(itemQuantity, (element) => {
@@ -102,7 +102,7 @@ const productBasket = async () => {
       });
     });
 
-    //On calcule le total d'articles et on ajoute le totale de quantité dans le DOM
+    //On calcule le total d'articles et on ajoute le total de quantité dans le DOM
     totalQuantity = document.getElementById("totalQuantity");
     function totalQuantityBasket() {
       let basket = getBasket();
@@ -114,11 +114,11 @@ const productBasket = async () => {
     }
     totalQuantityBasket();
 
+    //On supprime un article du panier
     let removeProduct = document.querySelectorAll(
       ".cart__item__content__settings__delete"
     );
 
-    //On supprime un article du panier
     Array.prototype.filter.call(removeProduct, (element) => {
       let parent = element.closest("article");
       let parentId = parent.dataset.id;
@@ -139,6 +139,8 @@ const productBasket = async () => {
         }
       });
     });
+  
+  //On affiche le formulaire si le panier n'est pas vide
   } else {
     const form = document.querySelector(".cart__order");
     form.style.display = "none";
@@ -150,11 +152,13 @@ const productBasket = async () => {
   let city = document.getElementById("city");
   let email = document.getElementById("email");
 
+  //On masque le formulaire si le panier est vide 
   let submit = document.getElementById("order");
   if (basket === null) {
     const form = document.querySelector(".cart__order");
     form.style.display = "none";
   }
+
   submit.addEventListener("click", (event) => {
     event.preventDefault();
     //On recupere la saisie de l'utilisateur dans les champs de saisie
@@ -181,7 +185,7 @@ const productBasket = async () => {
 
     function validationForm() {
       basket = getBasket();
-      console.log(basket);
+  
       //On verifie les champs de saisie avec les regexp
       if (regExpFirstName.test(valueFirstName) == false) {
         errorFirstName.innerHTML = "Entrer un nom valide";
@@ -199,7 +203,7 @@ const productBasket = async () => {
         errorEmail.innerHTML = "Entrer un email valide";
         return false;
       }
-      //Si les champs son valider on envois les données a l'api pour retouner un bon de commande
+      //Si les champs sont valides on envoie les données a l'api pour retouner un bon de commande
       else {
         let contact = {
           firstName: firstName.value,
@@ -215,7 +219,7 @@ const productBasket = async () => {
         });
 
         let userOrder = { contact: contact, products: cartOrder };
-        console.log(cartOrder);
+  
         fetch("http://localhost:3000/api/products/order", {
           method: "POST",
           headers: {

@@ -18,9 +18,9 @@ const product = async () => {
   }
 
   const data = await res.json();
-  console.log(data)
+  
 
-  //Ajout des donnés du produits en dynamaique
+  //Ajout des données du produit en dynamique
   //img
   const productImg = `
         <img src="${data.imageUrl}" alt="Photographie d'un canapé">
@@ -41,7 +41,7 @@ const product = async () => {
   });
 
   //-------------Local storage------------------------
-  //On ajoute les donnés saisie dans le localstorage
+  //On ajoute les données saisies et on les ajoute  dans le localstorage
   const quantity = document.getElementById("quantity");
   const button = document.getElementById("addToCart");
 
@@ -71,7 +71,7 @@ const product = async () => {
     }
   }
 
-  //Si deux produit on la meme couleur alors il ce cumule en un dans le localstorege
+  //Si deux produits ont la meme couleur alors ils se cumulent en un dans le localstorege
   function addBasket(kanap) {
     let basket = getBasket();
     let foundKanap = basket.find(

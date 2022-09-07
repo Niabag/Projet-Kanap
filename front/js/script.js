@@ -10,7 +10,7 @@ const card = async () => {
   }
 
   const data = await res.json();
-  //generation du code htlm des cartes completé avec l'API
+  //generation du code htlm des cartes completées avec l'API
   data.forEach((element) => {
     const card = `
               <a href="./product.html?id=${element._id}">
